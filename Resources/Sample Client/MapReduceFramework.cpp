@@ -166,7 +166,10 @@ void *job_func(void *arg)
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
 	printf("postmap thread %d \n", tc->threadID);
-	// std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
+	if (!tc->interVec[tc->threadID]->empty())
+	{
+		std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
+	}
 	tc->barrier->barrier();
 	std::queue<IntermediateVec> queue;
 	if (tc->threadID == 0)
