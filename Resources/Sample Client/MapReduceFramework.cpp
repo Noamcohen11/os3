@@ -193,18 +193,15 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 {
 	pthread_t threads[multiThreadLevel];
 	ThreadContext contexts[multiThreadLevel];
-	printf("cat0");
 	IntermediateVec **interVec = new IntermediateVec *[multiThreadLevel];
 	Barrier barrier(multiThreadLevel);
 	std::atomic<uint64_t> progress_counter(0);
 	progress_counter += STAGE_INC;
 	progress_counter += ((&inputVec)->size()) << 31;
 	sem_t semaphore;
-	printf("cat1");
 	pthread_mutex_t mutex_reduce;
 	pthread_mutex_t mutex_emit;
 	sem_init(&semaphore, 0, 0);
-	printf("cat2");
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
 		contexts[i] = {
@@ -220,12 +217,10 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 			mutex_emit,
 			outputVec};
 	}
-	printf("cat4");
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
-	printf("cat5");
 	JobHandleStruct *job = new JobHandleStruct{threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
 	printf("bruh1");
 	return job;
