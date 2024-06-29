@@ -166,7 +166,7 @@ void *job_func(void *arg)
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
 	printf("postmap thread %d \n", tc->threadID);
-	if (!tc->interVec[tc->threadID]->empty())
+	if (tc->interVec[tc->threadID]->size() != 0)
 	{
 		std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	}
