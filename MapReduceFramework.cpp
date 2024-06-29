@@ -8,6 +8,10 @@
 #include <semaphore.h>
 #include <queue>
 
+uint64_t STAGE_INC = (1 << 62);
+uint64_t TOTAL_INC = (1 << 31);
+uint64_t RESET_COUNT = (3 << 62);
+
 struct ThreadContext
 {
 	int threadID;
