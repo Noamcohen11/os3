@@ -100,8 +100,8 @@ float calculateProgress(std::atomic<uint64_t> *counter)
 
 	// Compare the first 31 bits with the next 31 bits
 	// Print binary representation of the first 31 bits and the next 31 bits
-	printBinary(first31, "First 31 bits");
-	printBinary(next31, "Next 31 bits");
+	// printBinary(first31, "First 31 bits");
+	// printBinary(next31, "Next 31 bits");
 	return next31 / first31;
 }
 
@@ -157,20 +157,17 @@ void *job_func(void *arg)
 	uint64_t old_value = (*(tc->map_counter))++;
 	old_value = old_value & MASK;
 	(void)old_value;
-	printf("old value %d \n", old_value);
 	while (old_value < (tc->inputVec)->size())
 	{
 		uint64_t old_value = (*(tc->map_counter))++;
 		old_value = old_value & MASK;
 		(void)old_value;
-		printf("bruh2 \n");
+		printf("premap thread %d \n", tc->threadID);
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
-	printf("bruh3 \n");
+	printf("postmap thread %d \n", tc->threadID);
 	std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
-	printf("bruh4 \n");
 	tc->barrier->barrier();
-	printf("bruh5 \n");
 	std::queue<IntermediateVec> queue;
 	if (tc->threadID == 0)
 	{
@@ -237,7 +234,6 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
 	JobHandleStruct *job = new JobHandleStruct{threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
-	printf("bruh1");
 	return job;
 }
 
