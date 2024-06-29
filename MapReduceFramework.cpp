@@ -8,9 +8,11 @@
 #include <semaphore.h>
 #include <queue>
 
+// TODO static cast
 uint64_t STAGE_INC = (1 << 62);
 uint64_t TOTAL_INC = (1 << 31);
 uint64_t RESET_COUNT = (3 << 62);
+uint64_t MASK = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
 
 struct ThreadContext
 {
@@ -22,6 +24,9 @@ struct ThreadContext
 	sem_t *semaphore;
 	int multiThreadLevel;
 	IntermediateVec **interVec;
+	pthread_mutex_t mutex_reduce;
+	pthread_mutex_t mutex_emit;
+	OutputVec outputVec;
 };
 
 // TODO understand counter.
@@ -32,7 +37,14 @@ void emit2(K2 *key, V2 *value, void *context)
 	tc->interVec[tc->threadID]->push_back(pair);
 }
 
-void emit3(K3 *key, V3 *value, void *context);
+void emit3(K3 *key, V3 *value, void *context)
+{
+	ThreadContext *tc = (ThreadContext *)context;
+	pthread_mutex_lock(&tc->mutex_emit);
+	OutputPair pair = std::make_pair(key, value);
+	tc->outputVec.push_back(pair);
+	pthread_mutex_unlock(&tc->mutex_emit);
+}
 
 K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 {
@@ -57,23 +69,22 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 
 	return maxKey;
 }
-bool compareProgress(std::atomic<uint64_t> *counter)
+float calculateProgress(std::atomic<uint64_t> *counter)
 {
-	// Mask to isolate the lower 31 bits
-	uint64_t mask = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
+	// MASK to isolate the lower 31 bits
 
 	// Extract the first 31 bits and the next 31 bits
-	uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & mask);
-	uint32_t next31 = static_cast<uint32_t>(*counter & mask);
+	uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
+	uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
 
 	// Compare the first 31 bits with the next 31 bits
-	return first31 == next31;
+	return first31 / next31;
 }
 
 std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
 {
 	std::queue<IntermediateVec> queue;
-	while (!compareProgress(tc->progress_counter))
+	while (calculateProgress(tc->progress_counter) != 1)
 	{
 		K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
 		for (int i = 0; i < tc->multiThreadLevel; i++)
@@ -100,6 +111,19 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
 	return queue;
 }
 
+void reduce_func(ThreadContext *tc, std::queue<IntermediateVec> queue)
+{
+	while (!(queue.empty()))
+	{
+		pthread_mutex_lock(&tc->mutex_reduce);
+		IntermediateVec vec = queue.front();
+		queue.pop();
+		pthread_mutex_unlock(&tc->mutex_reduce);
+
+		tc->client->reduce(&vec, tc);
+		tc->progress_counter += vec.size();
+	}
+}
 // TODO add job precentage.
 void *job_func(void *arg)
 {
@@ -117,6 +141,7 @@ void *job_func(void *arg)
 	}
 	std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	tc->barrier->barrier();
+	std::queue<IntermediateVec> queue;
 	if (tc->threadID == 0)
 	{
 		int shuffle_keys = 0;
@@ -127,8 +152,10 @@ void *job_func(void *arg)
 		tc->progress_counter = 0;
 		tc->progress_counter += (2 << 62);
 		tc->progress_counter += (shuffle_keys << 31);
-		std::queue<IntermediateVec> queue = __shuffle(tc);
+		queue = __shuffle(tc);
+		uint64_t new_count = static_cast<uint64_t>((*tc->progress_counter >> 31) & MASK);
 		tc->progress_counter = 0;
+		tc->progress_counter += new_count;
 		tc->progress_counter += (3 << 62);
 		for (int i = 0; i < tc->multiThreadLevel; ++i)
 		{
@@ -139,6 +166,7 @@ void *job_func(void *arg)
 	{
 		sem_wait(tc->semaphore);
 	}
+	reduce_func(tc, queue);
 }
 
 JobHandle startMapReduceJob(const MapReduceClient &client,
@@ -153,23 +181,62 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 	progress_counter += STAGE_INC;
 	progress_counter += ((&inputVec)->size()) << 31;
 	sem_t semaphore;
+	pthread_mutex_t mutex_reduce;
+	pthread_mutex_t mutex_emit;
 	sem_init(&semaphore, 0, 0);
 
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
-		contexts[i] = {i, &progress_counter, &inputVec, &client, &barrier, &semaphore, multiThreadLevel, interVec};
+		contexts[i] = {
+			i,
+			&progress_counter,
+			&inputVec,
+			&client,
+			&barrier,
+			&semaphore,
+			multiThreadLevel,
+			interVec,
+			mutex_reduce,
+			mutex_emit,
+			outputVec};
 	}
 
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
+	return contexts;
 }
 
 void waitForJob(JobHandle job);
-// {
-// 	// pthread_join(threads[i], NULL);
-// }
-void getJobState(JobHandle job, JobState *state);
+{
+	for (int i = 0; i < context->numThreads; i++)
+	{
+		if (pthread_join(context->threads[i], nullptr))
+		{
+			std::cout << "couldn't join the thread" << std::endl;
+			exit(1);
+		}
+	}
+}
+void getJobState(JobHandle job, JobState *state)
+{
+	ThreadContext *tc = (ThreadContext *)job;
+	state->percentage = calculateProgress(tc->progress_counter) * 100;
+	state->stage = static_cast<stage_t>(*tc->progress_counter >> 62);
+}
 // TODO sem_destroy(&semaphore);
-void closeJobHandle(JobHandle job);
+// TODO mutex_destroy(&mutex);
+void closeJobHandle(JobHandle job)
+{
+	ThreadContext *tc = (ThreadContext *)job;
+	pthread_mutex_destroy(&tc->mutex_emit);
+	pthread_mutex_destroy(&tc->mutex_reduce);
+	sem_destroy(tc->semaphore);
+
+	for (int i = 0; i < tc->multiThreadLevel; ++i)
+	{
+		delete tc->interVec[i];
+	}
+	delete[] tc->interVec;
+}
