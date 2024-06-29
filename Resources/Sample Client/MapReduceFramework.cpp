@@ -142,6 +142,8 @@ void *job_func(void *arg)
 	// TODO: check if ++ is prefix or postfix.
 	int old_value = ++(*(tc->progress_counter));
 	(void)old_value;
+	printf("\n old value %d \n", old_value);
+	printf("\n size %d \n", tc->inputVec->size());
 	while (old_value < (tc->inputVec)->size())
 	{
 		int old_value = ++(*(tc->progress_counter));
