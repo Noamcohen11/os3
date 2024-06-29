@@ -255,5 +255,5 @@ void closeJobHandle(JobHandle job)
 		delete job_st->interVec[i];
 	}
 	delete[] job_st->interVec;
-	delete job;
+	delete job_st;
 }
