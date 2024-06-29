@@ -9,6 +9,7 @@
 #include <queue>
 #include <iostream>
 #include <unistd.h>
+
 // TODO static cast
 uint64_t STAGE_INC = (1ULL << 62);
 uint64_t MASK = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
@@ -157,8 +158,8 @@ void *job_func(void *arg)
 	uint64_t old_value = (*(tc->map_counter))++;
 	old_value = old_value & MASK;
 	(void)old_value;
-	printf("going to sleep \n");
-	usleep(150000);
+	usleep(15000000);
+	printf("woke up\n");
 	while (old_value < (tc->inputVec)->size())
 	{
 		uint64_t old_value = (*(tc->map_counter))++;
