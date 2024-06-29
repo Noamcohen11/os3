@@ -165,10 +165,10 @@ void *job_func(void *arg)
 		// printf("premap thread %d \n", tc->threadID);
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
+	printf("hii");
 	// printf("postmap thread %d \n", tc->threadID);
 	if (!tc->interVec[tc->threadID]->empty())
 	{
-		printf("hii");
 		printf("sort size %d \n", tc->interVec[tc->threadID]->size());
 		std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	}
