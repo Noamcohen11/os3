@@ -17,6 +17,7 @@ struct ThreadContext
 {
 	int threadID;
 	std::atomic<uint64_t> *progress_counter;
+	std::atomic<uint64_t> *map_counter;
 	const InputVec *inputVec;
 	const MapReduceClient *client;
 	Barrier *barrier;
@@ -45,6 +46,7 @@ void emit2(K2 *key, V2 *value, void *context)
 	ThreadContext *tc = (ThreadContext *)context;
 	IntermediatePair pair = std::make_pair(key, value);
 	tc->interVec[tc->threadID]->push_back(pair);
+	tc->progress_counter++;
 }
 
 void emit3(K3 *key, V3 *value, void *context)
@@ -140,13 +142,13 @@ void *job_func(void *arg)
 	ThreadContext *tc = (ThreadContext *)arg;
 
 	// TODO: check if ++ is prefix or postfix.
-	uint64_t old_value = (*(tc->progress_counter))++;
+	uint64_t old_value = (*(tc->map_counter))++;
 	old_value = old_value & MASK;
 	(void)old_value;
 	printf("old value %d \n", old_value);
 	while (old_value < (tc->inputVec)->size())
 	{
-		uint64_t old_value = (*(tc->progress_counter))++;
+		uint64_t old_value = (*(tc->map_counter))++;
 		old_value = old_value & MASK;
 		(void)old_value;
 		printf("bruh2 \n");
@@ -195,6 +197,7 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 	IntermediateVec **interVec = new IntermediateVec *[multiThreadLevel];
 	Barrier barrier(multiThreadLevel);
 	std::atomic<uint64_t> progress_counter(0);
+	std::atomic<uint64_t> map_counter(0);
 	progress_counter += STAGE_INC;
 	progress_counter += ((&inputVec)->size()) << 31;
 	sem_t semaphore;
@@ -206,6 +209,7 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 		contexts[i] = {
 			i,
 			&progress_counter,
+			&map_counter,
 			&inputVec,
 			&client,
 			&barrier,
