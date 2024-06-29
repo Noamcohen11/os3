@@ -144,20 +144,19 @@ void *job_func(void *arg)
 	old_value = old_value & MASK;
 	(void)old_value;
 	printf("old value %d \n", old_value);
-	printf("size %d \n", tc->inputVec->size());
 	while (old_value < (tc->inputVec)->size())
 	{
 		uint64_t old_value = (*(tc->progress_counter))++;
 		old_value = old_value & MASK;
 		(void)old_value;
-		printf("bruh2");
+		printf("bruh2 \n");
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
-	printf("bruh3");
+	printf("bruh3 \n");
 	std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
-	printf("bruh4");
+	printf("bruh4 \n");
 	tc->barrier->barrier();
-	printf("bruh5");
+	printf("bruh5 \n");
 	std::queue<IntermediateVec> queue;
 	if (tc->threadID == 0)
 	{
