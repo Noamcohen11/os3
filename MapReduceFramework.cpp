@@ -8,10 +8,6 @@
 #include <semaphore.h>
 #include <queue>
 
-uint64_t STAGE_INC = (1 << 62);
-uint64_t TOTAL_INC = (1 << 31);
-uint64_t RESET_COUNT = (3 << 62);
-
 struct ThreadContext
 {
 	int threadID;
@@ -34,7 +30,7 @@ void emit2(K2 *key, V2 *value, void *context)
 
 void emit3(K3 *key, V3 *value, void *context);
 
-K2 *findMaxKeyInLastPairs(const IntermediateVec **interVec, int multiThreadLevel)
+K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 {
 	K2 *maxKey = nullptr;
 
@@ -43,8 +39,8 @@ K2 *findMaxKeyInLastPairs(const IntermediateVec **interVec, int multiThreadLevel
 		// Ensure the vector is not empty before accessing its last element
 		if (!interVec[i]->empty())
 		{
-			// Get a const reference to the last pair in the current IntermediateVec
-			const IntermediatePair &lastPair = interVec[i]->back();
+			// Get a reference to the last pair in the current IntermediateVec
+			IntermediatePair &lastPair = interVec[i]->back();
 			K2 *currentKey = lastPair.first;
 
 			// Compare currentKey with maxKey to find the maximum
