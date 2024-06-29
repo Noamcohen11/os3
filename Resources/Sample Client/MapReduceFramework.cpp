@@ -100,8 +100,8 @@ float calculateProgress(std::atomic<uint64_t> *counter)
 
 	// Compare the first 31 bits with the next 31 bits
 	// Print binary representation of the first 31 bits and the next 31 bits
-	printBinary(first31, "First 31 bits");
-	printBinary(next31, "Next 31 bits");
+	// printBinary(first31, "First 31 bits");
+	// printBinary(next31, "Next 31 bits");
 	return next31 / first31;
 }
 
