@@ -165,7 +165,7 @@ void *job_func(void *arg)
 		// printf("premap thread %d \n", tc->threadID);
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
-	printf("hii");
+	printf("done mapping \n ");
 	// printf("postmap thread %d \n", tc->threadID);
 	if (!tc->interVec[tc->threadID]->empty())
 	{
