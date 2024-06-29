@@ -90,7 +90,7 @@ float calculateProgress(std::atomic<uint64_t> *counter)
 	uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
 
 	// Compare the first 31 bits with the next 31 bits
-	return first31 / next31;
+	return next31 / first31;
 }
 
 std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
