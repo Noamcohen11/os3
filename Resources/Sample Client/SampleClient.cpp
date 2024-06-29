@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	getJobState(job, &state);
 	while (state.stage != REDUCE_STAGE || state.percentage != 100.0)
 	{
-		if (last_state.stage != state.stage || 0 != state.percentage)
+		if (last_state.stage != state.stage || 0.0 != state.percentage)
 		{
 			printf("stage %d, %f%% \n",
 				   state.stage, state.percentage);
