@@ -140,7 +140,8 @@ void *job_func(void *arg)
 	ThreadContext *tc = (ThreadContext *)arg;
 
 	// TODO: check if ++ is prefix or postfix.
-	int old_value = ++(*(tc->progress_counter));
+	uint64_t old_value = ++(*(tc->progress_counter));
+	old_value = old_value & MASK;
 	(void)old_value;
 	printf("\n old value %d \n", old_value);
 	printf("\n size %d \n", tc->inputVec->size());
