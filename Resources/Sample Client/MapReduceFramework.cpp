@@ -168,6 +168,7 @@ void *job_func(void *arg)
 	// printf("postmap thread %d \n", tc->threadID);
 	if (tc->interVec[tc->threadID]->empty())
 	{
+		printf("hii");
 		printf("sort size %d \n", tc->interVec[tc->threadID]->size());
 		// std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	}
