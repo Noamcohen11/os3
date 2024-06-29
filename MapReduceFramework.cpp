@@ -10,9 +10,7 @@
 #include <iostream>
 
 // TODO static cast
-uint64_t STAGE_INC = (1 << 62);
-uint64_t TOTAL_INC = (1 << 31);
-uint64_t RESET_COUNT = (3 << 62);
+uint64_t STAGE_INC = (1ULL << 62);
 uint64_t MASK = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
 
 struct ThreadContext
@@ -162,13 +160,13 @@ void *job_func(void *arg)
 			shuffle_keys += tc->interVec[tc->threadID]->size();
 		}
 		tc->progress_counter = 0;
-		tc->progress_counter += (2 << 62);
+		tc->progress_counter += (2ULL << 62);
 		tc->progress_counter += (shuffle_keys << 31);
 		queue = __shuffle(tc);
 		uint64_t new_count = static_cast<uint64_t>((*tc->progress_counter >> 31) & MASK);
 		tc->progress_counter = 0;
 		tc->progress_counter += new_count;
-		tc->progress_counter += (3 << 62);
+		tc->progress_counter += (3ULL << 62);
 		for (int i = 0; i < tc->multiThreadLevel; ++i)
 		{
 			sem_post(tc->semaphore); // Post to unblock one waiting thread
@@ -179,6 +177,7 @@ void *job_func(void *arg)
 		sem_wait(tc->semaphore);
 	}
 	reduce_func(tc, queue);
+	return nullptr;
 }
 
 JobHandle startMapReduceJob(const MapReduceClient &client,
