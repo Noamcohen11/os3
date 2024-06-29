@@ -81,6 +81,15 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 
 	return maxKey;
 }
+
+#include <bitset>
+
+// Function to print binary representation of a 32-bit integer
+void printBinary(uint32_t value, const char *label)
+{
+	std::cout << label << ": " << std::bitset<32>(value) << std::endl;
+}
+
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
 	// MASK to isolate the lower 31 bits
@@ -90,6 +99,9 @@ float calculateProgress(std::atomic<uint64_t> *counter)
 	uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
 
 	// Compare the first 31 bits with the next 31 bits
+	// Print binary representation of the first 31 bits and the next 31 bits
+	printBinary(first31, "First 31 bits");
+	printBinary(next31, "Next 31 bits");
 	return next31 / first31;
 }
 
