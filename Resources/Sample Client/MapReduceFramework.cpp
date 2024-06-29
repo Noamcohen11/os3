@@ -143,8 +143,8 @@ void *job_func(void *arg)
 	uint64_t old_value = ++(*(tc->progress_counter));
 	old_value = old_value & MASK;
 	(void)old_value;
-	printf("\n old value %d \n", old_value);
-	printf("\n size %d \n", tc->inputVec->size());
+	printf("old value %d \n", old_value);
+	printf("size %d \n", tc->inputVec->size());
 	while (old_value < (tc->inputVec)->size())
 	{
 		uint64_t old_value = ++(*(tc->progress_counter));
