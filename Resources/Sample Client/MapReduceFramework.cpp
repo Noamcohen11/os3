@@ -147,7 +147,8 @@ void *job_func(void *arg)
 	printf("\n size %d \n", tc->inputVec->size());
 	while (old_value < (tc->inputVec)->size())
 	{
-		int old_value = ++(*(tc->progress_counter));
+		uint64_t old_value = ++(*(tc->progress_counter));
+		old_value = old_value & MASK;
 		(void)old_value;
 		printf("bruh2");
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
