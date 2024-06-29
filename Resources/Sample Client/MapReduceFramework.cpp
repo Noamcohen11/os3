@@ -170,7 +170,7 @@ void *job_func(void *arg)
 	{
 		printf("hii");
 		printf("sort size %d \n", tc->interVec[tc->threadID]->size());
-		// std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
+		std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	}
 	tc->barrier->barrier();
 	std::queue<IntermediateVec> queue;
