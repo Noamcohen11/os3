@@ -218,8 +218,8 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
 
-	JobHandleStruct job = {threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
-	return &job;
+	JobHandleStruct *job = new JobHandleStruct{threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
+	return job;
 }
 
 void waitForJob(JobHandle job)
@@ -236,22 +236,24 @@ void waitForJob(JobHandle job)
 }
 void getJobState(JobHandle job, JobState *state)
 {
-	ThreadContext *tc = (ThreadContext *)job;
-	state->percentage = calculateProgress(tc->progress_counter) * 100;
-	state->stage = static_cast<stage_t>(*tc->progress_counter >> 62);
+	JobHandleStruct *job_st = (JobHandleStruct *)job;
+	state->percentage = calculateProgress(job_st->progress_counter) * 100;
+	state->stage = static_cast<stage_t>(*job_st->progress_counter >> 62);
 }
 // TODO sem_destroy(&semaphore);
 // TODO mutex_destroy(&mutex);
 void closeJobHandle(JobHandle job)
 {
-	ThreadContext *tc = (ThreadContext *)job;
-	pthread_mutex_destroy(&tc->mutex_emit);
-	pthread_mutex_destroy(&tc->mutex_reduce);
-	sem_destroy(tc->semaphore);
+	waitForJob(job);
+	JobHandleStruct *job_st = (JobHandleStruct *)job;
+	pthread_mutex_destroy(&job_st->mutex_emit);
+	pthread_mutex_destroy(&job_st->mutex_reduce);
+	sem_destroy(job_st->semaphore);
 
-	for (int i = 0; i < tc->multiThreadLevel; ++i)
+	for (int i = 0; i < job_st->multiThreadLevel; ++i)
 	{
-		delete tc->interVec[i];
+		delete job_st->interVec[i];
 	}
-	delete[] tc->interVec;
+	delete[] job_st->interVec;
+	delete job;
 }
