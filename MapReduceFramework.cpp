@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <semaphore.h>
 #include <queue>
+#include <iostream>
 
 // TODO static cast
 uint64_t STAGE_INC = (1 << 62);
@@ -27,6 +28,17 @@ struct ThreadContext
 	pthread_mutex_t mutex_reduce;
 	pthread_mutex_t mutex_emit;
 	OutputVec outputVec;
+};
+
+struct JobHandleStruct
+{
+	pthread_t *threads;
+	std::atomic<uint64_t> *progress_counter;
+	sem_t *semaphore;
+	int multiThreadLevel;
+	IntermediateVec **interVec;
+	pthread_mutex_t mutex_reduce;
+	pthread_mutex_t mutex_emit;
 };
 
 // TODO understand counter.
@@ -205,14 +217,17 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 	{
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
-	return contexts;
+
+	JobHandleStruct job = {threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
+	return &job;
 }
 
-void waitForJob(JobHandle job);
+void waitForJob(JobHandle job)
 {
-	for (int i = 0; i < context->numThreads; i++)
+	JobHandleStruct *job_st = (JobHandleStruct *)job;
+	for (int i = 0; i < job_st->multiThreadLevel; i++)
 	{
-		if (pthread_join(context->threads[i], nullptr))
+		if (pthread_join(job_st->threads[i], nullptr))
 		{
 			std::cout << "couldn't join the thread" << std::endl;
 			exit(1);
