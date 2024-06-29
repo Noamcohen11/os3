@@ -162,14 +162,14 @@ void *job_func(void *arg)
 		uint64_t old_value = (*(tc->map_counter))++;
 		old_value = old_value & MASK;
 		(void)old_value;
-		// printf("premap thread %d \n", tc->threadID);
+		printf("premap thread %d \n", tc->threadID);
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
-	printf("thread %d \n done mapping \n ", tc->threadID);
+	// printf("thread %d \n done mapping \n ", tc->threadID);
 	// printf("postmap thread %d \n", tc->threadID);
 	if (!tc->interVec[tc->threadID]->empty())
 	{
-		printf("thread %d \n sort size %d \n", tc->threadID, tc->interVec[tc->threadID]->size());
+		// printf("thread %d \n sort size %d \n", tc->threadID, tc->interVec[tc->threadID]->size());
 		std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
 	}
 	tc->barrier->barrier();
