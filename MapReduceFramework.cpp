@@ -4,6 +4,7 @@
 #include <atomic>
 #include <pthread.h>
 #include <cstdio>
+#include <algorithm>
 
 struct ThreadContext
 {
