@@ -188,8 +188,8 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
   ThreadContext contexts[multiThreadLevel];
   IntermediateVec **interVec = new IntermediateVec *[multiThreadLevel];
   Barrier barrier(multiThreadLevel);
-  std::atomic<uint64_t> progress_counter(0);
-  std::atomic<uint64_t> map_counter = new std::atomic<uint64_t>(0);
+  std::atomic<uint64_t> *progress_counter = new std::atomic<uint64_t>(0);
+  std::atomic<uint64_t> *map_counter = new std::atomic<uint64_t>(0);
   progress_counter += STAGE_INC;
   progress_counter += ((&inputVec)->size()) << 31;
   sem_t semaphore;
@@ -198,9 +198,9 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
   sem_init(&semaphore, 0, 0);
   for (int i = 0; i < multiThreadLevel; ++i) {
     interVec[i] = new IntermediateVec(); // Initialize each IntermediateVec
-    contexts[i] = {i,        &progress_counter, &map_counter, &inputVec,
-                   &client,  &barrier,          &semaphore,   multiThreadLevel,
-                   interVec, mutex_reduce,      mutex_emit,   outputVec};
+    contexts[i] = {i,        progress_counter, map_counter, &inputVec,
+                   &client,  &barrier,         &semaphore,  multiThreadLevel,
+                   interVec, mutex_reduce,     mutex_emit,  outputVec};
   }
   for (int i = 0; i < multiThreadLevel; ++i) {
     printf("Creating thread %d\n", i);
