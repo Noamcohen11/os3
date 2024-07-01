@@ -93,7 +93,8 @@ float calculateProgress(std::atomic<uint64_t> *counter) {
   // Print binary representation of the first 31 bits and the next 31 bits
   // printBinary(first31, "First 31 bits");
   // printBinary(next31, "Next 31 bits");
-  return next31 / first31;
+  return 0;
+  // return next31 / first31;
 }
 
 std::queue<IntermediateVec> __shuffle(ThreadContext *tc) {
@@ -242,4 +243,3 @@ void closeJobHandle(JobHandle job) {
   delete[] job_st->interVec;
   delete job_st;
 }
-
