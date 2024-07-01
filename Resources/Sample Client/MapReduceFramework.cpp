@@ -189,7 +189,7 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
   IntermediateVec **interVec = new IntermediateVec *[multiThreadLevel];
   Barrier barrier(multiThreadLevel);
   std::atomic<uint64_t> progress_counter(0);
-  std::atomic<uint64_t> map_counter(0);
+  std::atomic<uint64_t> map_counter = new std::atomic<uint64_t>(0);
   progress_counter += STAGE_INC;
   progress_counter += ((&inputVec)->size()) << 31;
   sem_t semaphore;
