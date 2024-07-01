@@ -158,15 +158,13 @@ void *job_func(void *arg)
 	uint64_t old_value = (*(tc->map_counter))++;
 	old_value = old_value & MASK;
 	(void)old_value;
-	usleep(15000000);
-	printf("woke up\n");
 	while (old_value < (tc->inputVec)->size())
 	{
+		printf("premap thread %d \n", tc->threadID);
+		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 		uint64_t old_value = (*(tc->map_counter))++;
 		old_value = old_value & MASK;
 		(void)old_value;
-		printf("premap thread %d \n", tc->threadID);
-		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
 	printf("thread %d \n done mapping \n ", tc->threadID);
 	// printf("postmap thread %d \n", tc->threadID);
