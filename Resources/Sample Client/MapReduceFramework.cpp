@@ -235,7 +235,7 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
     pthread_create(threads + i, NULL, job_func, contexts + i);
   }
   JobHandleStruct *job = new JobHandleStruct{
-      threads, &progress_counter, &semaphore, multiThreadLevel,
+      threads, progress_counter, &semaphore, multiThreadLevel,
       interVec, mutex_reduce, mutex_emit};
   return job;
 }
