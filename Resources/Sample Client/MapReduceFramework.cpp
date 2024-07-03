@@ -129,9 +129,10 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
         }
       }
     }
+    printf("pre increase inter_queue size %d \n", inter_queue.size());
     inter_queue.push(vec);
+    printf("post increase inter_queue size %d \n", inter_queue.size());
   }
-  printf("inter_queue size %d", inter_queue.size());
   return inter_queue;
 }
 
