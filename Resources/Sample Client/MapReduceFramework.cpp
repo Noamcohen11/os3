@@ -81,9 +81,22 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
   return maxKey;
 }
 
-// Calculate progress function
+void printFirstAndNext(std::atomic<uint64_t> *counter)
+{
+  const uint64_t MASK = 0x7FFFFFFF; // MASK to isolate the lower 31 bits
+
+  // Extract the first 31 bits and the next 31 bits
+  uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
+  uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
+
+  // Print the first and next 31 bits
+  std::cout << "First 31 bits: " << first31 << std::endl;
+  std::cout << "Next 31 bits: " << next31 << std::endl;
+}
+
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
+  printFirstAndNext(counter);
   uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
   uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
   return first31 != 0 ? static_cast<float>(next31) / first31 : 0.0f;
