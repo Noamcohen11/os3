@@ -117,7 +117,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
       {
         IntermediatePair &lastPair = tc->interVec[i]->back();
         K2 *currentKey = lastPair.first;
-        while (!(currentKey < max_key))
+        while (!(lastPair.first < max_key))
         {
           // printf("poping back, vector size = %d\n", tc->interVec[i]->size());
           tc->interVec[i]->pop_back();
@@ -128,8 +128,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
             break;
           }
           lastPair = tc->interVec[i]->back();
-          currentKey = lastPair.first;
         }
+        lastPair.first = currentKey;
       }
     }
 
