@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	CounterClient client;
 	InputVec inputVec;
 	OutputVec outputVec;
-	VString s1("abc");
+	VString s1("abgc");
 	VString s3("def");
 	VString s2("ggglshi");
 	inputVec.push_back({nullptr, &s1});
