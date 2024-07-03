@@ -123,7 +123,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
           tc->interVec[i]->pop_back();
           vec.push_back(lastPair);
           (*(tc->progress_counter))++;
-          if (!tc->interVec[i]->empty())
+          if (tc->interVec[i]->empty())
           {
             break;
           }
