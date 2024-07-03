@@ -117,21 +117,12 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
       {
         IntermediatePair &lastPair = tc->interVec[i]->back();
         K2 *currentKey = lastPair.first;
-        bool flag = false;
-        if (!(max_key < currentKey))
+        while (!(currentKey < max_key))
         {
-          while (lastPair.first == currentKey)
-          {
-            if (flag)
-            {
-              printf("flag is true \n");
-            }
-            flag = true;
-            tc->interVec[i]->pop_back();
-            vec.push_back(lastPair);
-            (*(tc->progress_counter))++;
-            lastPair = tc->interVec[i]->back();
-          }
+          tc->interVec[i]->pop_back();
+          vec.push_back(lastPair);
+          (*(tc->progress_counter))++;
+          lastPair = tc->interVec[i]->back();
         }
       }
     }
