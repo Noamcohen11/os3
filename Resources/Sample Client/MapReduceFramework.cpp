@@ -179,6 +179,7 @@ void *job_func(void *arg)
     *(tc->progress_counter) = 0;
     *(tc->progress_counter) += (2ULL << 62);
     *(tc->progress_counter) += (shuffle_keys << 31);
+    printf("shuffle keys %d \n ", shuffle_keys);
     printFirstAndNext(tc->progress_counter);
     queue = __shuffle(tc);
     uint64_t new_count =
