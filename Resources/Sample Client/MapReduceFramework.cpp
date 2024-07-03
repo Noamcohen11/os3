@@ -165,9 +165,7 @@ void *job_func(void *arg)
     std::sort(tc->interVec[tc->threadID]->begin(),
               tc->interVec[tc->threadID]->end());
   }
-  printf("pre barrier\n");
   tc->barrier->barrier();
-  printf("post barrier\n");
   std::queue<IntermediateVec> queue;
   if (tc->threadID == 0)
   {
@@ -180,7 +178,10 @@ void *job_func(void *arg)
     *(tc->progress_counter) += (2ULL << 62);
     *(tc->progress_counter) += (static_cast<uint64_t>(shuffle_keys) << 31);
     printFirstAndNext(tc->progress_counter);
+
+    printf("pre shuffle \n");
     queue = __shuffle(tc);
+    printf("post shuffle \n");
     uint64_t new_count =
         static_cast<uint64_t>((*(tc->progress_counter) >> 31) & MASK);
     *(tc->progress_counter) = 0;
