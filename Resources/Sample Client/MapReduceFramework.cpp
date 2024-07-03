@@ -10,21 +10,6 @@
 #include <semaphore.h>
 #include <unistd.h>
 
-class KChar : public K2, public K3
-{
-public:
-  KChar(char c) : c(c) {}
-  virtual bool operator<(const K2 &other) const
-  {
-    return c < static_cast<const KChar &>(other).c;
-  }
-  virtual bool operator<(const K3 &other) const
-  {
-    return c < static_cast<const KChar &>(other).c;
-  }
-  char c;
-};
-
 // Constants
 uint64_t STAGE_INC = (1ULL << 62);
 uint64_t MASK = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
@@ -110,26 +95,6 @@ void printFirstAndNext(std::atomic<uint64_t> *counter)
   std::cout << "Next 31 bits: " << next31 << std::endl;
 }
 
-class VCount : public V2, public V3
-{
-public:
-  VCount(int count) : count(count) {}
-  int count;
-};
-
-void printIntermediateVec(const IntermediateVec &vec)
-{
-  for (const auto &pair : vec)
-  {
-    K2 *key = pair.first;
-    V2 *value = pair.second;
-    char c = static_cast<KChar *>(key)->c;
-    int count = static_cast<VCount *>(value)->count;
-    std::cout << "{" << c << ", " << count << "} ";
-  }
-  std::cout << std::endl;
-}
-
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
   // printFirstAndNext(counter);
@@ -169,13 +134,6 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
 
     inter_queue.push(vec);
   }
-  std::queue<IntermediateVec> tempQueue = inter_queue;
-  while (!tempQueue.empty())
-  {
-    IntermediateVec vec = tempQueue.front();
-    printIntermediateVec(vec);
-    tempQueue.pop();
-  }
   return inter_queue;
 }
 
@@ -209,7 +167,6 @@ void *job_func(void *arg)
   }
   if (!tc->interVec[tc->threadID]->empty())
   {
-    printf("sorting \n");
     std::sort(tc->interVec[tc->threadID]->begin(),
               tc->interVec[tc->threadID]->end(),
               [](const std::pair<K2 *, V2 *> &a, const std::pair<K2 *, V2 *> &b)
@@ -278,7 +235,6 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
   }
   for (int i = 0; i < multiThreadLevel; ++i)
   {
-    printf("Creating thread %d\n", i);
     pthread_create(threads + i, nullptr, job_func, contexts + i);
   }
   JobHandleStruct *job = new JobHandleStruct{
