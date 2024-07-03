@@ -168,6 +168,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
     }
 
     inter_queue.push(vec);
+    printf("queuee size %d\n", inter_queue.size());
     std::queue<IntermediateVec> tempQueue = inter_queue;
     while (!tempQueue.empty())
     {
