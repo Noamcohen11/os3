@@ -110,9 +110,9 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
   while (calculateProgress(tc->progress_counter) != 1)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
+    IntermediateVec vec;
     for (int i = 0; i < tc->multiThreadLevel; i++)
     {
-      IntermediateVec vec;
       if (!tc->interVec[i]->empty())
       {
         IntermediatePair &lastPair = tc->interVec[i]->back();
@@ -128,8 +128,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
           }
         }
       }
-      queue.push(vec);
     }
+    queue.push(vec);
   }
   return queue;
 }
