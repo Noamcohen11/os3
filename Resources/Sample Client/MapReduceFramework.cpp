@@ -110,6 +110,26 @@ void printFirstAndNext(std::atomic<uint64_t> *counter)
   std::cout << "Next 31 bits: " << next31 << std::endl;
 }
 
+class VCount : public V2, public V3
+{
+public:
+  VCount(int count) : count(count) {}
+  int count;
+};
+
+void printIntermediateVec(const IntermediateVec &vec)
+{
+  for (const auto &pair : vec)
+  {
+    K2 *key = pair.first;
+    V2 *value = pair.second;
+    char c = static_cast<KChar *>(key)->c;
+    int count = static_cast<VCount *>(value)->count;
+    std::cout << "{" << c << ", " << count << "} ";
+  }
+  std::cout << std::endl;
+}
+
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
   // printFirstAndNext(counter);
@@ -125,8 +145,6 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
   while (calculateProgress(tc->progress_counter) != 1)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
-    char c = ((const KChar *)max_key)->c;
-    printf("max key :%c \n ", c);
     IntermediateVec vec;
     for (int i = 0; i < tc->multiThreadLevel; i++)
     {
@@ -134,11 +152,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
       {
         IntermediatePair &lastPair = tc->interVec[i]->back();
         K2 *currentKey = lastPair.first;
-        // char c = ((const KChar *)currentKey)->c;
-        // printf("thread %d back :%c \n ", i, c);
         while (!(currentKey < max_key))
         {
-          // printf("poping back, vector size = %d\n", tc->interVec[i]->size());
           tc->interVec[i]->pop_back();
           vec.push_back(lastPair);
           (*(tc->progress_counter))++;
@@ -153,6 +168,13 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
     }
 
     inter_queue.push(vec);
+    std::queue<IntermediateVec> tempQueue = inter_queue;
+    while (!tempQueue.empty())
+    {
+      IntermediateVec vec = tempQueue.front();
+      printIntermediateVec(vec);
+      tempQueue.pop();
+    }
   }
   return inter_queue;
 }
