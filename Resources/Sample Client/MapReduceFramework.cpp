@@ -154,6 +154,7 @@ void *job_func(void *arg)
     tc->client->map((*(tc->inputVec))[old_value].first,
                     (*(tc->inputVec))[old_value].second, tc);
     old_value = (*(tc->map_counter))++;
+    (*(tc->progress_counter))++;
     old_value = old_value & MASK;
   }
   printf("thread %d done mapping\n", tc->threadID);
