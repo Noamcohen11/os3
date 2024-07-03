@@ -86,7 +86,7 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
     {
       IntermediatePair &lastPair = interVec[i]->back();
       K2 *currentKey = lastPair.first;
-      if (maxKey == nullptr || (*maxKey) < (*currentKey))
+      if (maxKey == nullptr || maxKey < currentKey)
       {
         maxKey = currentKey;
       }
@@ -136,10 +136,6 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
         K2 *currentKey = lastPair.first;
         while (!(currentKey < max_key))
         {
-          if (max_key < currentKey)
-          {
-            printf("bugged \n ");
-          }
           // printf("poping back, vector size = %d\n", tc->interVec[i]->size());
           tc->interVec[i]->pop_back();
           vec.push_back(lastPair);
