@@ -64,9 +64,11 @@ void emit3(K3 *key, V3 *value, void *context)
 // Helper function to find the maximum key in the last pairs of intermediate vectors
 K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 {
+  printf("starting to find max key \n");
   K2 *maxKey = nullptr;
   for (int i = 0; i < multiThreadLevel; ++i)
   {
+    printf("loop %d\n", i);
     if (!interVec[i]->empty())
     {
       IntermediatePair &lastPair = interVec[i]->back();
