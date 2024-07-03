@@ -126,9 +126,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
     char c = ((const KChar *)max_key)->c;
-    printf("max key :%c \n ", c);
     IntermediateVec vec;
-    for (int i = 1; i < tc->multiThreadLevel; i++)
+    for (int i = 0; i < tc->multiThreadLevel; i++)
     {
       if (!tc->interVec[i]->empty())
       {
