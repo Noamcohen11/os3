@@ -97,7 +97,7 @@ void printFirstAndNext(std::atomic<uint64_t> *counter)
 
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
-  // printFirstAndNext(counter);
+  printFirstAndNext(counter);
   uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
   uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
   return first31 != 0 ? static_cast<float>(next31) / first31 : 0.0f;
