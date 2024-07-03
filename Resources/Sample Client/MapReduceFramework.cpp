@@ -167,9 +167,9 @@ void *job_func(void *arg)
     printf("sorting \n");
     std::sort(tc->interVec[tc->threadID]->begin(),
               tc->interVec[tc->threadID]->end(),
-              [](const auto &a, const auto &b)
+              [](const std::pair<K2 *, V2 *> &a, const std::pair<K2 *, V2 *> &b)
               {
-                return a.first < b.first; // Custom comparison
+                return *(a.first) < *(b.first);
               });
   }
   tc->barrier->barrier();
