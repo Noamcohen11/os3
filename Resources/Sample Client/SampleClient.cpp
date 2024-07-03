@@ -52,7 +52,7 @@ public:
 
 			KChar *k2 = new KChar(i);
 			VCount *v2 = new VCount(counts[i]);
-			usleep(150000);
+			usleep(15000);
 			emit2(k2, v2, context);
 		}
 	}
@@ -70,7 +70,7 @@ public:
 		}
 		KChar *k3 = new KChar(c);
 		VCount *v3 = new VCount(count);
-		usleep(150000);
+		usleep(15000);
 		emit3(k3, v3, context);
 	}
 };

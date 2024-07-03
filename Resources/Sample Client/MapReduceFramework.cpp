@@ -166,7 +166,11 @@ void *job_func(void *arg)
   {
     printf("sorting \n");
     std::sort(tc->interVec[tc->threadID]->begin(),
-              tc->interVec[tc->threadID]->end());
+              tc->interVec[tc->threadID]->end(),
+              [](const auto &a, const auto &b)
+              {
+                return a.first < b.first; // Custom comparison
+              });
   }
   tc->barrier->barrier();
   std::queue<IntermediateVec> queue;
