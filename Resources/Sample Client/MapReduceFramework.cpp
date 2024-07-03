@@ -128,6 +128,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
             break;
           }
           lastPair = tc->interVec[i]->back();
+          currentKey = lastPair.first;
         }
       }
     }
