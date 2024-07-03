@@ -10,6 +10,21 @@
 #include <semaphore.h>
 #include <unistd.h>
 
+class KChar : public K2, public K3
+{
+public:
+  KChar(char c) : c(c) {}
+  virtual bool operator<(const K2 &other) const
+  {
+    return c < static_cast<const KChar &>(other).c;
+  }
+  virtual bool operator<(const K3 &other) const
+  {
+    return c < static_cast<const KChar &>(other).c;
+  }
+  char c;
+};
+
 // Constants
 uint64_t STAGE_INC = (1ULL << 62);
 uint64_t MASK = 0x000000007FFFFFFF; // 0x7FFFFFFF in hexadecimal
@@ -110,6 +125,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
   while (calculateProgress(tc->progress_counter) != 1)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
+    char c = ((const KChar *)max_key)->c;
+    printf("max key :%d \n ", c);
     IntermediateVec vec;
     for (int i = 0; i < tc->multiThreadLevel; i++)
     {
@@ -117,7 +134,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
       {
         IntermediatePair &lastPair = tc->interVec[i]->back();
         K2 *currentKey = lastPair.first;
-        while (!(lastPair.first < max_key))
+        while (!(currentKey < max_key))
         {
           // printf("poping back, vector size = %d\n", tc->interVec[i]->size());
           tc->interVec[i]->pop_back();
@@ -128,8 +145,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
             break;
           }
           lastPair = tc->interVec[i]->back();
+          currentKey = lastPair.first;
         }
-        lastPair.first = currentKey;
       }
     }
 
