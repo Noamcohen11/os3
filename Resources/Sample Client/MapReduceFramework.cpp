@@ -176,10 +176,10 @@ void *job_func(void *arg)
     {
       shuffle_keys += tc->interVec[i]->size();
     }
-    printf("counter increasing\n");
     *(tc->progress_counter) = 0;
     *(tc->progress_counter) += (2ULL << 62);
     *(tc->progress_counter) += (shuffle_keys << 31);
+    printFirstAndNext(tc->progress_counter);
     queue = __shuffle(tc);
     uint64_t new_count =
         static_cast<uint64_t>((*(tc->progress_counter) >> 31) & MASK);
