@@ -88,7 +88,7 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
       K2 *currentKey = lastPair.first;
       char c = ((const KChar *)currentKey)->c;
       printf("thread %d back :%c \n ", i, c);
-      if (maxKey == nullptr || maxKey < currentKey)
+      if (maxKey == nullptr || (*maxKey) < (*currentKey))
       {
         maxKey = currentKey;
       }
