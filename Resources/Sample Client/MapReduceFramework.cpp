@@ -179,13 +179,11 @@ void *job_func(void *arg)
     *(tc->progress_counter) += (static_cast<uint64_t>(shuffle_keys) << 31);
     printFirstAndNext(tc->progress_counter);
 
-    printf("pre shuffle \n");
     queue = __shuffle(tc);
-    printf("post shuffle \n");
     uint64_t new_count =
         static_cast<uint64_t>((*(tc->progress_counter) >> 31) & MASK);
     *(tc->progress_counter) = 0;
-    *(tc->progress_counter) += new_count;
+    *(tc->progress_counter) += (static_cast<uint64_t>(new_count) << 31);
     *(tc->progress_counter) += (3ULL << 62);
     for (int i = 0; i < tc->multiThreadLevel; ++i)
     {
