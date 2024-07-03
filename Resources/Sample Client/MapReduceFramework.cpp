@@ -156,18 +156,17 @@ void *job_func(void *arg)
   old_value = old_value & MASK;
   while (old_value < tc->inputVec->size())
   {
-    printf("premap thread %d\n", tc->threadID);
     tc->client->map((*(tc->inputVec))[old_value].first,
                     (*(tc->inputVec))[old_value].second, tc);
     old_value = (*(tc->map_counter))++;
     (*(tc->progress_counter))++;
     old_value = old_value & MASK;
   }
-  printf("thread %d done mapping\n", tc->threadID);
   if (!tc->interVec[tc->threadID]->empty())
   {
-    // std::sort(tc->interVec[tc->threadID]->begin(),
-    //           tc->interVec[tc->threadID]->end());
+    printf("sorting \n");
+    std::sort(tc->interVec[tc->threadID]->begin(),
+              tc->interVec[tc->threadID]->end());
   }
   tc->barrier->barrier();
   std::queue<IntermediateVec> queue;
