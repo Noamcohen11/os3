@@ -106,7 +106,7 @@ float calculateProgress(std::atomic<uint64_t> *counter)
 // Shuffle function
 std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
 {
-  std::queue<IntermediateVec> queue;
+  std::queue<IntermediateVec> inter_queue;
   while (calculateProgress(tc->progress_counter) != 1)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
@@ -129,9 +129,10 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
         }
       }
     }
-    queue.push(vec);
+    inter_queue.push(vec);
   }
-  return queue;
+  printf("inter_queue size %d", inter_queue.size());
+  return inter_queue;
 }
 
 // Reduce function
