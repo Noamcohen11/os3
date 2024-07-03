@@ -115,7 +115,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
       IntermediateVec vec;
       if (!tc->interVec[i]->empty())
       {
-        const IntermediatePair &lastPair = tc->interVec[i]->back();
+        IntermediatePair &lastPair = tc->interVec[i]->back();
         K2 *currentKey = lastPair.first;
         if (!(max_key < currentKey))
         {
@@ -124,7 +124,7 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
             tc->interVec[i]->pop_back();
             vec.push_back(lastPair);
             (*(tc->progress_counter))++;
-            const IntermediatePair &lastPair = tc->interVec[i]->back();
+            lastPair = tc->interVec[i]->back();
           }
         }
       }
