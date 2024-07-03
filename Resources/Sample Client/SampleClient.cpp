@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	InputVec inputVec;
 	OutputVec outputVec;
 	VString s1("This string is full of characters");
-	VString s2("Multithreading is awesome");
+	VString s2("Multithreading is awesomze");
 	VString s3("race conditions are bad");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
