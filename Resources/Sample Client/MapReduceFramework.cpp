@@ -166,8 +166,8 @@ void *job_func(void *arg)
   printf("thread %d done mapping\n", tc->threadID);
   if (!tc->interVec[tc->threadID]->empty())
   {
-    std::sort(tc->interVec[tc->threadID]->begin(),
-              tc->interVec[tc->threadID]->end());
+    // std::sort(tc->interVec[tc->threadID]->begin(),
+    //           tc->interVec[tc->threadID]->end());
   }
   tc->barrier->barrier();
   std::queue<IntermediateVec> queue;
