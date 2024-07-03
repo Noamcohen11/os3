@@ -49,7 +49,6 @@ void emit2(K2 *key, V2 *value, void *context)
   ThreadContext *tc = (ThreadContext *)context;
   IntermediatePair pair = std::make_pair(key, value);
   tc->interVec[tc->threadID]->push_back(pair);
-  (*(tc->progress_counter))++;
 }
 
 // Emit3 function
