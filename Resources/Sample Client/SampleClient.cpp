@@ -80,15 +80,15 @@ int main(int argc, char **argv)
 	CounterClient client;
 	InputVec inputVec;
 	OutputVec outputVec;
-	VString s1("abc");
-	VString s3("def");
-	VString s2("ghi");
+	VString s1("This string is full of characters");
+	VString s2("Multithreading is awesome");
+	VString s3("race conditions are bad");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
 	inputVec.push_back({nullptr, &s3});
 	JobState state;
 	JobState last_state = {UNDEFINED_STAGE, 0};
-	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 2);
+	JobHandle job = startMapReduceJob(client, inputVec, outputVec, 4);
 	getJobState(job, &state);
 	while (state.stage != REDUCE_STAGE || state.percentage != 100.0)
 	{
