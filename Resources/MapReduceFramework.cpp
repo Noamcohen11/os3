@@ -79,8 +79,23 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 
 	return maxKey;
 }
+
+void printFirstAndNext(std::atomic<uint64_t> *counter)
+{
+	const uint64_t MASK = 0x7FFFFFFF; // MASK to isolate the lower 31 bits
+
+	// Extract the first 31 bits and the next 31 bits
+	uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
+	uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
+
+	// Print the first and next 31 bits
+	std::cout << "First 31 bits: " << first31 << std::endl;
+	std::cout << "Next 31 bits: " << next31 << std::endl;
+}
+
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
+	printFirstAndNext(counter);
 	// MASK to isolate the lower 31 bits
 
 	// Extract the first 31 bits and the next 31 bits
@@ -146,14 +161,10 @@ void *job_func(void *arg)
 	{
 		int old_value = ++(*(tc->progress_counter));
 		(void)old_value;
-		printf("bruh2");
 		tc->client->map((*(tc->inputVec))[old_value].first, (*(tc->inputVec))[old_value].second, tc);
 	}
-	printf("bruh3");
 	std::sort(tc->interVec[tc->threadID]->begin(), tc->interVec[tc->threadID]->end());
-	printf("bruh4");
 	tc->barrier->barrier();
-	printf("bruh5");
 	std::queue<IntermediateVec> queue;
 	if (tc->threadID == 0)
 	{
@@ -189,18 +200,15 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 {
 	pthread_t threads[multiThreadLevel];
 	ThreadContext contexts[multiThreadLevel];
-	printf("cat0");
 	IntermediateVec **interVec = new IntermediateVec *[multiThreadLevel];
 	Barrier barrier(multiThreadLevel);
 	std::atomic<uint64_t> progress_counter(0);
 	progress_counter += STAGE_INC;
 	progress_counter += ((&inputVec)->size()) << 31;
 	sem_t semaphore;
-	printf("cat1");
 	pthread_mutex_t mutex_reduce;
 	pthread_mutex_t mutex_emit;
 	sem_init(&semaphore, 0, 0);
-	printf("cat2");
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
 		contexts[i] = {
@@ -216,14 +224,11 @@ JobHandle startMapReduceJob(const MapReduceClient &client,
 			mutex_emit,
 			outputVec};
 	}
-	printf("cat4");
 	for (int i = 0; i < multiThreadLevel; ++i)
 	{
 		pthread_create(threads + i, NULL, job_func, contexts + i);
 	}
-	printf("cat5");
 	JobHandleStruct *job = new JobHandleStruct{threads, &progress_counter, &semaphore, multiThreadLevel, interVec, mutex_reduce, mutex_emit};
-	printf("bruh1");
 	return job;
 }
 
