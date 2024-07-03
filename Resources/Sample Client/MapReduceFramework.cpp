@@ -124,8 +124,8 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
   std::queue<IntermediateVec> inter_queue;
   printf("vec0 size : %d\n ", tc->interVec[0]->size());
   printf("vec1 size : %d\n ", tc->interVec[1]->size());
-  printf("vec2 size : %d\n ", tc->interVec[2]->size());
-  printf("vec3 size : %d\n ", tc->interVec[3]->size());
+  // printf("vec2 size : %d\n ", tc->interVec[2]->size());
+  // printf("vec3 size : %d\n ", tc->interVec[3]->size());
   while (calculateProgress(tc->progress_counter) != 1)
   {
     K2 *max_key = findMaxKeyInLastPairs(tc->interVec, tc->multiThreadLevel);
