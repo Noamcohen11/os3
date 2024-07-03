@@ -86,7 +86,7 @@ K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
     {
       IntermediatePair &lastPair = interVec[i]->back();
       K2 *currentKey = lastPair.first;
-      if (maxKey == nullptr || maxKey < currentKey)
+      if (maxKey == nullptr || (*maxKey) < (*currentKey))
       {
         maxKey = currentKey;
       }
