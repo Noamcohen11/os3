@@ -97,7 +97,7 @@ void printFirstAndNext(std::atomic<uint64_t> *counter)
 
 float calculateProgress(std::atomic<uint64_t> *counter)
 {
-  printFirstAndNext(counter);
+  // printFirstAndNext(counter);
   uint32_t first31 = static_cast<uint32_t>((*counter >> 31) & MASK);
   uint32_t next31 = static_cast<uint32_t>(*counter & MASK);
   return first31 != 0 ? static_cast<float>(next31) / first31 : 0.0f;
@@ -165,7 +165,9 @@ void *job_func(void *arg)
     std::sort(tc->interVec[tc->threadID]->begin(),
               tc->interVec[tc->threadID]->end());
   }
+  printf("pre barrier\n");
   tc->barrier->barrier();
+  printf("post barrier\n");
   std::queue<IntermediateVec> queue;
   if (tc->threadID == 0)
   {
