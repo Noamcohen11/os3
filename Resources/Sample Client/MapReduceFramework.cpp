@@ -64,11 +64,9 @@ void emit3(K3 *key, V3 *value, void *context)
 // Helper function to find the maximum key in the last pairs of intermediate vectors
 K2 *findMaxKeyInLastPairs(IntermediateVec **interVec, int multiThreadLevel)
 {
-  printf("starting to find max key \n");
   K2 *maxKey = nullptr;
   for (int i = 0; i < multiThreadLevel; ++i)
   {
-    printf("loop %d\n", i);
     if (!interVec[i]->empty())
     {
       IntermediatePair &lastPair = interVec[i]->back();
@@ -121,9 +119,13 @@ std::queue<IntermediateVec> __shuffle(ThreadContext *tc)
         K2 *currentKey = lastPair.first;
         if (!(max_key < currentKey))
         {
-          tc->interVec[i]->pop_back();
-          vec.push_back(lastPair);
-          (*(tc->progress_counter))++;
+          while (lastPair.first == currentKey)
+          {
+            tc->interVec[i]->pop_back();
+            vec.push_back(lastPair);
+            (*(tc->progress_counter))++;
+            const IntermediatePair &lastPair = tc->interVec[i]->back();
+          }
         }
       }
       queue.push(vec);
