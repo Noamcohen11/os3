@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 	OutputVec outputVec;
 	VString s1("abc");
 	VString s3("def");
-	VString s2("ggshi");
+	VString s2("gggshi");
 	inputVec.push_back({nullptr, &s1});
 	inputVec.push_back({nullptr, &s2});
 	inputVec.push_back({nullptr, &s3});
